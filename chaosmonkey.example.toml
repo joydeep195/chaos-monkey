@@ -1,0 +1,54 @@
+# Chaos Monkey settings. Copy to chaosmonkey.toml and edit.
+# Secrets never go in this file: set CHAOSMONKEY_DATABASE_URL, CHAOSMONKEY_AUDIT_KEY and
+# (development only) CHAOSMONKEY_DEV_SIGNING_KEY as environment variables.
+
+environment = "development"   # "production" refuses to start until every check passes
+
+# Master switches. These defaults match Netflix's Chaos Monkey: off, leashed, not scheduling.
+enabled = false               # false: never terminate anything
+leashed = true                # true: every kill is a dry run (logged, not carried out)
+schedule_enabled = false      # false: do not plan new kills
+
+# Kills happen only inside working hours on working days, so people are around.
+time_zone = "Asia/Kolkata"
+start_hour = 10
+end_hour = 16
+working_days = ["mon", "tue", "wed", "thu", "fri"]
+holidays = [2026-11-24, 2026-12-25]
+
+# Global guard rails.
+allowed_accounts = ["staging", "prod"]   # nothing outside these accounts is ever touched
+max_kills_per_day = 10                   # live kills across all apps
+max_concurrent_kills = 1                 # live kills still waiting to recover
+recovery_timeout_minutes = 10            # no recovery by then: kill switch goes on
+missed_kill_grace_minutes = 30
+approval_valid_days = 90                 # approvals must be renewed after this
+tick_seconds = 30
+
+driver = "simulator"                     # Kubernetes and AWS drivers arrive in M3
+simulator_fleet = "fleet.toml"
+simulator_state = "data/simulator-state.json"
+
+database_url = "sqlite:///data/chaosmonkey.db"   # production: PostgreSQL via CHAOSMONKEY_DATABASE_URL
+
+[api]
+host = "127.0.0.1"
+port = 8080
+dev_auth = true                          # development tokens; must be false in production
+allowed_hosts = ["localhost", "127.0.0.1"]
+rate_limit_per_minute = 120
+
+# Single sign-on (OpenID Connect), required in production. Example for Microsoft Entra ID:
+# oidc_issuer = "https://login.microsoftonline.com/<tenant-id>/v2.0"
+# oidc_audience = "api://chaosmonkey"
+# oidc_jwks_url = "https://login.microsoftonline.com/<tenant-id>/discovery/v2.0/keys"
+# subject_claim = "preferred_username"
+# groups_claim = "groups"
+# team_group_prefix = "team-"
+
+# [api.role_groups]
+# viewer = ["chaosmonkey-viewers"]
+# app_owner = ["chaosmonkey-app-owners"]
+# approver = ["chaosmonkey-approvers"]
+# operator = ["sre-on-call"]
+# admin = ["chaosmonkey-admins"]

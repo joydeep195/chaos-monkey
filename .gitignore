@@ -1,0 +1,43 @@
+# Secrets: only example files are ever committed
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+
+# Local settings and simulated fleet (copied from the .example files)
+chaosmonkey.toml
+fleet.toml
+
+# Local data, databases and caches
+data/
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+audit-export*.jsonl
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+build/
+dist/
+*.egg-info/
+
+# Local tool settings
+.claude/
+
+# Editors and operating systems
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+.DS_Store

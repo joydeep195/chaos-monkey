@@ -1,0 +1,21 @@
+# Runs on every commit. All hooks are local: they use the tools already
+# installed in .venv by uv, so nothing is downloaded from the internet.
+# Install once with: uv run pre-commit install
+repos:
+  - repo: local
+    hooks:
+      - id: guard
+        name: Block secrets, local settings, keys and databases
+        entry: uv run python tools/precommit_guard.py
+        language: system
+        pass_filenames: true
+      - id: ruff-check
+        name: Lint and security rules (ruff)
+        entry: uv run ruff check --force-exclude
+        language: system
+        types_or: [python, pyi]
+      - id: ruff-format
+        name: Formatting (ruff)
+        entry: uv run ruff format --check --force-exclude
+        language: system
+        types_or: [python, pyi]

@@ -1,0 +1,48 @@
+# A simulated fleet for local runs and demos. Nothing here is real.
+# Copy to fleet.toml. Each [[group]] is one cluster in one account and region.
+
+[[group]]
+app = "payments-api"
+account = "prod"
+region = "ap-south-1"
+stack = "main"
+replicas = 4
+recovery_seconds = 90
+
+[[group]]
+app = "payments-api"
+account = "prod"
+region = "ap-south-2"
+stack = "main"
+replicas = 3
+recovery_seconds = 90
+
+[[group]]
+app = "ledger"
+account = "prod"
+region = "ap-south-1"
+stack = "primary"
+replicas = 3
+protected = true          # carries the opt-out label: never touched
+
+[[group]]
+app = "ledger"
+account = "prod"
+region = "ap-south-1"
+stack = "readers"
+replicas = 4
+recovery_seconds = 120
+
+[[group]]
+app = "kyc-checks"
+account = "staging"
+region = "ap-south-1"
+replicas = 2              # with min_healthy = 2, the capacity guard always refuses
+recovery_seconds = 60
+
+[[group]]
+app = "statements"
+account = "staging"
+region = "ap-south-1"
+replicas = 3
+recovers = false          # a fragile service: shows the automatic halt

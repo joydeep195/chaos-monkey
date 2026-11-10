@@ -1,0 +1,87 @@
+[project]
+name = "chaosmonkey"
+version = "0.1.0"
+description = "Chaos engineering for regulated financial services: random, opt-in terminations with approvals, guard rails and a tamper-evident audit trail."
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.14,<3.15"
+dependencies = [
+    "fastapi>=0.162.2",
+    "pydantic>=2.14.3",
+    "pyjwt[crypto]>=2.15.1",
+    "sqlalchemy>=2.1.8",
+    "typer>=0.28.0",
+    "tzdata>=2026.6",
+    "uvicorn>=0.54.0",
+]
+
+[project.scripts]
+chaosmonkey = "chaosmonkey.cli:main"
+
+[project.optional-dependencies]
+postgres = [
+    "psycopg[binary]>=3.3.8",
+]
+
+[build-system]
+requires = ["uv_build>=0.13.5,<0.14"]
+build-backend = "uv_build"
+
+[tool.uv]
+# uv's cache is on C: and the project on D:, so hard links are not possible.
+link-mode = "copy"
+
+[dependency-groups]
+dev = [
+    "httpx2>=2.16.0",
+    "mypy>=2.4.1",
+    "pip-audit>=2.10.1",
+    "pre-commit>=4.7.0",
+    "pytest>=9.2.0",
+    "ruff>=0.17.4",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = ["-ra", "--strict-markers", "--strict-config"]
+xfail_strict = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py314"
+src = ["src", "tests", "tools"]
+
+[tool.ruff.format]
+line-ending = "lf"
+
+[tool.ruff.lint]
+select = [
+    "E", "W", "F",  # pycodestyle and pyflakes: basic errors
+    "I",            # import order
+    "B",            # likely bugs
+    "UP",           # modern Python syntax
+    "S",            # security (bandit rules): SQL injection, eval, pickle, unsafe subprocess
+    "SIM",          # simpler code
+    "PTH",          # pathlib instead of os.path
+    "DTZ",          # timezone-aware datetimes only
+    "N",            # naming
+    "RUF",          # ruff's own checks
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["chaosmonkey", "tools"]
+
+[tool.ruff.lint.flake8-bugbear]
+# FastAPI and Typer declare parameters through default values; these are not mutable defaults.
+extend-immutable-calls = ["fastapi.Depends", "fastapi.Query", "fastapi.Header", "typer.Option", "typer.Argument"]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests use assert and fixed example secrets; tools call Python and uv as subprocesses.
+"tests/**" = ["S101", "S105", "S106", "S311", "S603", "S607"]
+"tools/**" = ["S603", "S607"]
+
+[tool.mypy]
+python_version = "3.14"
+strict = true
+files = ["src", "tools"]
+plugins = ["pydantic.mypy"]
