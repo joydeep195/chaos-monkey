@@ -66,7 +66,7 @@ tests/           one file per area, all against synthetic fleets
 - chaosmonkey.toml and fleet.toml are local and gitignored; commit only the .example files.
 - Before every commit, run `git status`. Stop and tell me if anything under data/, a .toml without .example, a key file or a database is staged.
 - The pre-commit hook blocks secrets, local settings, keys and databases. Never bypass it.
-- Git stays on this PC: no remote and no push until I ask.
+- Remote: https://github.com/joydeep195/chaos-monkey (public). Push only when I ask.
 
 ## Definition of done
 
